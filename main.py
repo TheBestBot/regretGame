@@ -1,2 +1,0 @@
-#random sus text
-#no

@@ -5,6 +5,7 @@ difficulty = 0
 
 health = 100
 attack = 10
+blockAmount = 10
 block = 0
 
 def piece(text = """Lorem Ipsum,
@@ -51,6 +52,7 @@ def encounter(level = 0, diff = difficulty):
   global fails
   global health
   global block
+  global blockAmount
   global attack
   level += diff
   if random.choice([0]) == 0:
@@ -58,7 +60,8 @@ def encounter(level = 0, diff = difficulty):
     piece("A wild goblin appears!\n")
     hp = round(100+3*level)
     attk = round(5+0.4*level)
-    blk = round(5+0.4*level)
+    blkAmount = round(5+0.4*level)
+    blk = 0
 
     #0 is attack 1 is block
     while True:
@@ -66,47 +69,60 @@ def encounter(level = 0, diff = difficulty):
         piece("The goblin intends to attack for {} damge.\n".format(attk))
         action = 0
       else:
-        piece("The goblin intends to block {} points.\n".format(blk))
+        piece("The goblin intends to block for {},\nto increase his block from {} to {}.\n".format(blkAmount, blk, blk + blkAmount))
         action = 1
       
       while True:
-        piece("Attack or Block?")
+        piece("Attack or Block?\n")
         option = input().strip().lower()
         time.sleep(0.5)
         print("")
 
         if len(option) != 0:
           if option[0][0] == "a":
-            piece("You attack the goblin for {} damage!\n".format(attack))
-
-          if blk == 0:
-            hp -= attack
- 
-
+            if blk == 0:
+              hp -= attack
+              piece("You attack the goblin and deal {} damage!\n".format(attack))
+            else:
+              hpTotal = hp + blk
+              hpTotal -= attack
+              if hpTotal >= hp:
+                hpTotal -= hp
+                piece("You did {} damge to his block.\nYou lowerd it to {}\n".format(attack, hpTotal))
+              else:
+                hp = hp - (hp - hpTotal)
+                piece("You broke his block and did {} damage.\nHis health is now {}\n".format(hp - hpTotal, hp))
           elif option[0][0] == "b":
-            piece("Enough? That's going to hurt, however much that is.\n\n")
-            option = 1
-            break
+            blockAmount += block
+            piece("You block for {} points. You total block is now {}.".format(block, blockAmount))
           else:
             piece("Thats not what I asked for.\n")
             fails += 1
         else:
           piece("Thats not what I asked for.\n")
           fails += 1
+      break
+
+      if action == 0:
+        piece("The goblin intends to attack for {} damge.\n".format(attk))
+      else:
+        piece("The goblin intends to block for {},\nto increase his block from {} to {}.\n".format(blkAmount, blk, blk + blkAmount))
+
+
 
   else:
     #random bandit
     piece("A hostile bandit appears!")
     hp = round(50+1*level)
     attk = round(10+1*level)
-    blk = round(5+1*level)
+    blkAmount = round(5+1*level)
 
     #0 is attack 1 is block
     if random.choice([0, 1]) == 0:
       piece("The bandit intends to attack for {} damge.\n".format(attk))
       action = 0
     else:
-      piece("The bandit intends to block {} points.\n".format(blk))
+      piece("The bandit intends to block {} points.\n".format(blkAmount))
       action = 1
 
 encounter(10)

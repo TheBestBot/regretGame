@@ -104,9 +104,23 @@ def encounter(level = 0, diff = difficulty):
       break
 
       if action == 0:
-        piece("The goblin intends to attack for {} damge.\n".format(attk))
+        #get attcked
+        if block == 0:
+          health -= attk
+          piece("You are hit and take {} damage.\n".format(attk))
+        else:
+          hpTotal = hp + blk
+          hpTotal -= attack
+          if hpTotal >= hp:
+            hpTotal -= hp
+            piece("You did {} damge to his block.\nYou lowerd it to {}\n".format(attack, hpTotal))
+          else:
+            hp = hp - (hp - hpTotal)
+            piece("You broke his block and did {} damage.\nHis health is now {}\n".format(hp - hpTotal, hp))
+        piece("The goblin attacks for {} damge.\n".format(attk))
       else:
-        piece("The goblin intends to block for {},\nto increase his block from {} to {}.\n".format(blkAmount, blk, blk + blkAmount))
+        blk += blkAmount
+        piece("The goblin blocks for {},\nto increasing his block to {}.\n".format(blkAmount, blk))
 
 
 
